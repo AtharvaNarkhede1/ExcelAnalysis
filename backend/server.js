@@ -15,7 +15,33 @@ const historyRoutes = require("./routes/historyRoutes");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+// Define allowed origins
+const allowedOrigins = [
+  'https://excel-analysis-mauve.vercel.app',
+  'http://localhost:3000' // Optional: if you're also testing locally
+];
+
+// CORS configuration
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl, or Postman)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true, // If you use cookies or sessions
+};
+
+// Apply CORS middleware
+app.use(cors(corsOptions));
+
+// (Optional) Handle pre-flight OPTIONS requests
+app.options('*', cors(corsOptions));
 app.use(express.json());
 
 app.use(

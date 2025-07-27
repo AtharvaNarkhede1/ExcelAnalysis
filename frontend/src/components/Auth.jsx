@@ -39,18 +39,13 @@ const Auth = ({ setToken, setRole }) => {
       toast.success(data.message);
 
       if (data.token && data.user) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("role", data.user.role);
-        setToken(data.token);
-        setRole(data.user.role);
-        if (data.user.role === "admin") {
-          navigate("/");
-        } else {
-          navigate("/");
-        }
-        window.location.reload();
-        return;
-      }
+  localStorage.setItem("token", data.token);
+  localStorage.setItem("role", data.user.role);
+
+  // Hard reload to home page
+  window.location.href = "/";
+}
+
 
       if (!isLogin) {
         setIsLogin(true);

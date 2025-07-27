@@ -44,9 +44,9 @@ const Auth = ({ setToken, setRole }) => {
         setToken(data.token);
         setRole(data.user.role);
         if (data.user.role === "admin") {
-          navigate("/admin/dashboard");
+          navigate("/");
         } else {
-          navigate("/user/home");
+          navigate("/");
         }
         window.location.reload();
         return;

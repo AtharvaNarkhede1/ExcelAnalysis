@@ -109,11 +109,11 @@ const Footer = () => {
             <ul className="footer-list">
               <li className="footer-contact-item">
                 <FaEnvelope className="contact-icon" />
-                <span>avisharmaaa373@gmail.com</span>
+                <span>atharvanarkhede969@gmail.com</span>
               </li>
               <li className="footer-contact-item">
                 <FaPhoneAlt className="contact-icon" />
-                <span>+91 92582 47887</span>
+                <span>+91 7588343686</span>
               </li>
             </ul>
           </motion.div>

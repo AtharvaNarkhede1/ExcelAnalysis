@@ -40,8 +40,6 @@ const corsOptions = {
 // Apply CORS middleware
 app.use(cors(corsOptions));
 
-// (Optional) Handle pre-flight OPTIONS requests
-app.options('*', cors(corsOptions));
 app.use(express.json());
 
 app.use(

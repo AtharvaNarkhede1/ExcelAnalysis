@@ -21,24 +21,22 @@ const allowedOrigins = [
   'http://localhost:3000' // Optional: if you're also testing locally
 ];
 
-// CORS configuration
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl, or Postman)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      return callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true, // If you use cookies or sessions
-};
+app.use(
+    cors({
+        origin: function (origin, callback) {
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, origin); // ✅ Allow only one
+            } else {
+                callback(new Error("Not allowed by CORS"));
+            }
+        },
+        credentials: true,
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    })
+);
 
-// Apply CORS middleware
-app.use(cors(corsOptions));
+
+
 
 app.use(express.json());
 

@@ -42,10 +42,8 @@ const Auth = ({ setToken, setRole }) => {
         localStorage.setItem("token", data.token);
         localStorage.setItem("role", data.user.role);
 
-        // Hard reload to home page
         window.location.href = "/";
       }
-
 
       if (!isLogin) {
         setIsLogin(true);
@@ -57,12 +55,12 @@ const Auth = ({ setToken, setRole }) => {
   };
 
   return (
-    <div className="auth-container">
+    <div className="auth-container new-auth-bg">
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="auth-card"
+        className="auth-card new-auth-card"
       >
         <motion.div
           className="auth-header"
@@ -70,8 +68,8 @@ const Auth = ({ setToken, setRole }) => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <h2>{isLogin ? "Welcome Back" : "Create Account"}</h2>
-          <p>{isLogin ? "Login to continue" : "Join us to get started"}</p>
+          <h2 className="new-auth-title">{isLogin ? "Welcome Back" : "Create Account"}</h2>
+          <p className="new-auth-subtitle">{isLogin ? "Login to continue" : "Join us to get started"}</p>
         </motion.div>
 
         <motion.form
@@ -85,7 +83,7 @@ const Auth = ({ setToken, setRole }) => {
             <motion.div
               initial={{ x: -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              className="input-group"
+              className="input-group new-input-group"
             >
               <FiUser className="input-icon" />
               <input
@@ -95,11 +93,12 @@ const Auth = ({ setToken, setRole }) => {
                 value={formData.username}
                 onChange={handleChange}
                 required
+                className="new-input"
               />
             </motion.div>
           )}
 
-          <div className="input-group">
+          <div className="input-group new-input-group">
             <FiMail className="input-icon" />
             <input
               type="email"
@@ -108,10 +107,11 @@ const Auth = ({ setToken, setRole }) => {
               value={formData.email}
               onChange={handleChange}
               required
+              className="new-input"
             />
           </div>
 
-          <div className="input-group">
+          <div className="input-group new-input-group">
             <FiLock className="input-icon" />
             <input
               type={showPassword ? "text" : "password"}
@@ -120,18 +120,20 @@ const Auth = ({ setToken, setRole }) => {
               value={formData.password}
               onChange={handleChange}
               required
+              className="new-input"
             />
             <button
               type="button"
-              className="show-password"
+              className="show-password new-show-password"
               onClick={() => setShowPassword(!showPassword)}
+              tabIndex={-1}
             >
               {showPassword ? <FiEyeOff /> : <FiEye />}
             </button>
           </div>
 
           {isLogin && (
-            <div className="forgot-password-link">
+            <div className="forgot-password-link new-forgot-link">
               <span onClick={() => navigate("/forgot-password")}>
                 Forgot Password?
               </span>
@@ -139,44 +141,28 @@ const Auth = ({ setToken, setRole }) => {
           )}
 
           <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
             type="submit"
-            className="auth-submit"
+            className="auth-submit new-auth-submit"
           >
             {isLogin ? "Login" : "Register"}
           </motion.button>
         </motion.form>
 
         <motion.div
-          className="social-login"
+          className="social-login new-social-login"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <p className="or-divider">or</p>
+          <p className="or-divider new-or-divider">or</p>
 
-          <button
-            className="social-btn google-btn"
-            onClick={() =>
-              window.open("http://localhost:5000/api/google", "_self")
-            }
-          >
-            <FaGoogle className="icon" /> Continue with Google
-          </button>
-
-          <button
-            className="social-btn github-btn"
-            onClick={() =>
-              window.open("http://localhost:5000/api/github", "_self")
-            }
-          >
-            <FaGithub className="icon" /> Continue with GitHub
-          </button>
+          
         </motion.div>
 
         <motion.div
-          className="auth-footer"
+          className="auth-footer new-auth-footer"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
@@ -186,7 +172,7 @@ const Auth = ({ setToken, setRole }) => {
             <motion.span
               whileHover={{ color: "#4361ee" }}
               onClick={toggleForm}
-              className="toggle-link"
+              className="toggle-link new-toggle-link"
             >
               {isLogin ? " Register" : " Login"}
             </motion.span>

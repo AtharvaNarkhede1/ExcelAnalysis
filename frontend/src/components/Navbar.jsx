@@ -35,8 +35,8 @@ const Navbar = ({ token, role, setToken, setRole }) => {
         <nav className={`navbar ${isScrolled ? "scrolled" : ""}`}>
             <div className="navbar-container">
                 <div className="logo" onClick={() => navigate("/")}>
-                    <span className="logo-text">Data</span>
-                    <span className="logo-highlight">Insights</span>
+                    <span className="logo-text">EXCEL</span>
+                    <span className="logo-highlight">EASY</span>
                 </div>
 
                 <div className="desktop-links">

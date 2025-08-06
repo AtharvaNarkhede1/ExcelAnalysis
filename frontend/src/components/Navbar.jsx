@@ -73,7 +73,7 @@ const Navbar = ({ token, role, setToken, setRole }) => {
                     {token && (
                         <button className="logout-btn" onClick={handleLogout}>
                             <FiLogOut />
-                            Logout
+                            <span className="logout-text">Logout</span>
                         </button>
                     )}
                 </div>
@@ -82,7 +82,7 @@ const Navbar = ({ token, role, setToken, setRole }) => {
                     className="mobile-menu-btn"
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 >
-                    {isMobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+                    {isMobileMenuOpen ? <FiX size={26} /> : <FiMenu size={26} />}
                 </button>
             </div>
 
@@ -159,7 +159,7 @@ const Navbar = ({ token, role, setToken, setRole }) => {
                                 }}
                             >
                                 <FiLogOut />
-                                Logout
+                                <span className="logout-text">Logout</span>
                             </button>
                         )}
                     </motion.div>

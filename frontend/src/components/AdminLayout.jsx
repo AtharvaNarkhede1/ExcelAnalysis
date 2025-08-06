@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
+import { FiGrid, FiUsers, FiFileText, FiLogOut, FiChevronLeft, FiChevronRight, FiShield } from "react-icons/fi";
 import "../styles/components/AdminLayout.css";
 
 const AdminLayout = () => {
@@ -20,18 +21,15 @@ const AdminLayout = () => {
   };
 
   const sidebarVariants = {
-    open: { width: "280px" },
-    closed: { width: "80px" }
+    open: { width: "260px" },
+    closed: { width: "76px" }
   };
 
-  const NavItem = ({ to, icon, text }) => (
-    <li className={`nav-item ${location.pathname === to ? "active" : ""}`}>
-      <Link to={to} className="nav-link">
-        <i className={`fas fa-${icon}`}></i>
-        {sidebarOpen && <span>{text}</span>}
-      </Link>
-    </li>
-  );
+  const navItems = [
+    { to: "/admin/dashboard", icon: <FiGrid />, text: "Dashboard" },
+    { to: "/admin/users", icon: <FiUsers />, text: "Users" },
+    { to: "/admin/files", icon: <FiFileText />, text: "Files" }
+  ];
 
   return (
     <div className="admin-layout">
@@ -40,30 +38,38 @@ const AdminLayout = () => {
         initial={false}
         animate={sidebarOpen ? "open" : "closed"}
         variants={sidebarVariants}
-        transition={{ type: "spring", damping: 25 }}
+        transition={{ type: "spring", damping: 22, stiffness: 180 }}
       >
         <div className="sidebar-brand">
           <div className="brand-logo">
-            <i className="fas fa-shield-alt"></i>
+            <FiShield size={28} />
           </div>
-          {sidebarOpen && <h2>Admin Console</h2>}
+          {sidebarOpen && <h2 className="brand-title">Admin Console</h2>}
           <button className="toggle-btn" onClick={toggleSidebar}>
-            <i className={`fas fa-chevron-${sidebarOpen ? "left" : "right"}`}></i>
+            {sidebarOpen ? <FiChevronLeft size={22} /> : <FiChevronRight size={22} />}
           </button>
         </div>
 
         <nav className="sidebar-nav">
           <ul>
-            <NavItem to="/admin/dashboard" icon="tachometer-alt" text="Dashboard" />
-            <NavItem to="/admin/users" icon="users" text="Users" />
-            <NavItem to="/admin/files" icon="file-archive" text="Files" />
+            {navItems.map((item) => (
+              <li
+                key={item.to}
+                className={`nav-item ${location.pathname === item.to ? "active" : ""}`}
+              >
+                <Link to={item.to} className="nav-link">
+                  <span className="nav-icon">{item.icon}</span>
+                  {sidebarOpen && <span className="nav-text">{item.text}</span>}
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
 
         <div className="sidebar-footer">
           <button onClick={handleLogout} className="logout-btn">
-            <i className="fas fa-sign-out-alt"></i>
-            {sidebarOpen && <span>Logout</span>}
+            <FiLogOut size={21} />
+            {sidebarOpen && <span className="nav-text">Logout</span>}
           </button>
         </div>
       </motion.aside>

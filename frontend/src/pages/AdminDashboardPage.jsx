@@ -5,8 +5,8 @@ import { toast } from "react-toastify";
 import "../styles/pages/AdminDashboardPage.css";
 import DashboardCharts from "../components/DashboardCharts";
 import LogList from "../components/LogList";
+import { FiUsers, FiFileText, FiDatabase } from "react-icons/fi";
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
-
 
 const AdminDashboardPage = () => {
   const [stats, setStats] = useState({
@@ -69,8 +69,8 @@ const AdminDashboardPage = () => {
       y: 0,
       opacity: 1,
       transition: {
-        delay: i * 0.15,
-        duration: 0.6,
+        delay: i * 0.14,
+        duration: 0.52,
         type: "spring",
         stiffness: 120
       }
@@ -89,7 +89,7 @@ const AdminDashboardPage = () => {
     <div className="dashboard-container">
       <motion.div
         className="dashboard-header"
-        initial={{ opacity: 0, y: -20 }}
+        initial={{ opacity: 0, y: -18 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
@@ -99,15 +99,15 @@ const AdminDashboardPage = () => {
 
       <div className="dashboard-cards">
         <StatCard
-          icon="users"
+          icon={<FiUsers />}
           title="Total Users"
           value={stats.users}
-          color="#6366F1"
+          color="#8b5cf6"
           index={0}
           variants={cardVariants}
         />
         <StatCard
-          icon="file-alt"
+          icon={<FiFileText />}
           title="Total Files"
           value={stats.files}
           color="#10B981"
@@ -115,10 +115,10 @@ const AdminDashboardPage = () => {
           variants={cardVariants}
         />
         <StatCard
-          icon="database"
+          icon={<FiDatabase />}
           title="Storage Used"
           value={stats.storage}
-          color="#3B82F6"
+          color="#6366F1"
           index={2}
           variants={cardVariants}
         />
@@ -137,11 +137,11 @@ const StatCard = ({ icon, title, value, color, index, variants }) => (
     initial="hidden"
     animate="visible"
     custom={index}
-    whileHover={{ y: -5 }}
+    whileHover={{ y: -7, boxShadow: `0 6px 18px ${color}44` }}
     style={{ '--card-accent': color }}
   >
-    <div className="card-icon">
-      <i className={`fas fa-${icon}`}></i>
+    <div className="card-icon" style={{ background: `var(--card-accent)` }}>
+      {icon}
     </div>
     <div className="card-content">
       <h3>{title}</h3>

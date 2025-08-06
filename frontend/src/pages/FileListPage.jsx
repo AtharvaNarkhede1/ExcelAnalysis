@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import FileCard from "../components/FileCard";
 import "../styles/pages/FileListPage.css";
 import { toast } from "react-toastify";
+import { FiSearch, FiFolder, FiX } from "react-icons/fi";
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 const FileListPage = () => {
@@ -37,7 +38,6 @@ const FileListPage = () => {
         headers: { Authorization: `Bearer ${token}` },
         responseType: 'blob'
       });
-  
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement('a');
       link.href = url;
@@ -46,7 +46,7 @@ const FileListPage = () => {
       link.click();
       link.remove();
     } catch {
-      alert("Failed to download file");
+      toast.error("Failed to download file");
     }
   };
 
@@ -86,8 +86,8 @@ const FileListPage = () => {
       opacity: 1,
       y: 0,
       transition: {
-        delay: i * 0.07,
-        duration: 0.4,
+        delay: i * 0.06,
+        duration: 0.34,
         ease: "easeOut",
       },
     }),
@@ -105,16 +105,16 @@ const FileListPage = () => {
     <div className="files-container">
       <motion.div
         className="files-header"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4 }}
+        initial={{ opacity: 0, y: -18 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
       >
-        <h2>File Management</h2>
+        <h2><span className="header-icon"><FiFolder /></span> File Management</h2>
         <div className="search-bar">
-          <i className="fas fa-search"></i>
+          <FiSearch className="search-icon" />
           <input
             type="text"
-            placeholder="Search files..."
+            placeholder="Search by file or owner..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -137,10 +137,11 @@ const FileListPage = () => {
         ) : (
           <motion.div
             className="empty-state"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.36 }}
           >
-            <i className="fas fa-folder-open"></i>
+            <FiFolder className="empty-icon" />
             <p>No files found</p>
           </motion.div>
         )}
@@ -148,34 +149,37 @@ const FileListPage = () => {
 
       {selectedFile && selectedFile.data?.length > 0 && (
         <motion.div
-          className="file-preview-table"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          className="file-preview-modal"
+          initial={{ opacity: 0, scale: 0.86, y: 40 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: "easeOut" }}
         >
           <div className="preview-header">
             <h4>Preview: {selectedFile.fileName}</h4>
             <button onClick={handleClosePreview} className="close-button">
-              Close
+              <FiX size={20} />
             </button>
           </div>
-          <table>
-            <thead>
-              <tr>
-                {Object.keys(selectedFile.data[0]).map((header, idx) => (
-                  <th key={idx}>{header}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {selectedFile.data.slice(0, 10).map((row, idx) => (
-                <tr key={idx}>
-                  {Object.values(row).map((cell, cIdx) => (
-                    <td key={cIdx}>{cell}</td>
+          <div className="preview-table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  {Object.keys(selectedFile.data[0]).map((header, idx) => (
+                    <th key={idx}>{header}</th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {selectedFile.data.slice(0, 10).map((row, idx) => (
+                  <tr key={idx}>
+                    {Object.values(row).map((cell, cIdx) => (
+                      <td key={cIdx}>{cell}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </motion.div>
       )}
     </div>

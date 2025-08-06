@@ -39,12 +39,12 @@ const Auth = ({ setToken, setRole }) => {
       toast.success(data.message);
 
       if (data.token && data.user) {
-  localStorage.setItem("token", data.token);
-  localStorage.setItem("role", data.user.role);
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("role", data.user.role);
 
-  // Hard reload to home page
-  window.location.href = "/";
-}
+        // Hard reload to home page
+        window.location.href = "/";
+      }
 
 
       if (!isLogin) {

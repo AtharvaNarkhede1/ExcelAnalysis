@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { FiUpload, FiX, FiCheckCircle } from "react-icons/fi";
-import { motion } from "framer-motion";
+import { FiUpload, FiX, FiCheckCircle, FiFile, FiAlertCircle } from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
 import "../styles/components/FileUploadForm.css";
-const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 const FileUploadForm = ({ onUploadSuccess }) => {
   const [file, setFile] = useState(null);
@@ -12,6 +12,7 @@ const FileUploadForm = ({ onUploadSuccess }) => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isDragOver, setIsDragOver] = useState(false);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -24,15 +25,33 @@ const FileUploadForm = ({ onUploadSuccess }) => {
         setErrorMessage("Please upload a valid Excel file (.xls or .xlsx)");
         return;
       }
-
       if (selectedFile.size > 5 * 1024 * 1024) {
         setErrorMessage("File size must be less than 5MB");
         return;
       }
-
       setFile(selectedFile);
       setErrorMessage("");
       setUploadStatus(null);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const droppedFile = e.dataTransfer.files[0];
+    if (droppedFile) {
+      const event = { target: { files: [droppedFile] } };
+      handleFileChange(event);
     }
   };
 
@@ -50,7 +69,6 @@ const FileUploadForm = ({ onUploadSuccess }) => {
       setIsUploading(true);
       setUploadStatus(null);
       setUploadProgress(0);
-
       const token = localStorage.getItem("token");
       const response = await axios.post(
         `${BASE_URL}/api/files/upload`,
@@ -68,7 +86,6 @@ const FileUploadForm = ({ onUploadSuccess }) => {
           },
         }
       );
-
       setUploadStatus("success");
       if (onUploadSuccess) {
         onUploadSuccess(response.data);
@@ -93,69 +110,167 @@ const FileUploadForm = ({ onUploadSuccess }) => {
     setUploadProgress(0);
   };
 
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
   return (
     <div className="file-upload-container">
       <motion.div
         className="upload-card"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
       >
         <div className="upload-header">
-          <FiUpload size={24} />
+          <div className="header-icon">
+            <FiUpload size={28} />
+          </div>
           <h2>Upload Excel File</h2>
-          <p>Supported formats: .xls, .xlsx (max 5MB)</p>
+          <p>Drag and drop your file here or click to browse</p>
+          <div className="supported-formats">
+            <span>Supported formats: .xls, .xlsx</span>
+            <span>Maximum size: 5MB</span>
+          </div>
         </div>
 
         <form onSubmit={handleUpload} className="upload-form">
-          <div className="file-input-container">
-            <label className="file-input-label">
-              {file ? file.name : "Choose a file"}
-              <input
-                type="file"
-                accept=".xlsx, .xls"
-                onChange={handleFileChange}
-                disabled={isUploading}
-                className="file-input"
-              />
-            </label>
-            {file && (
-              <button
-                type="button"
-                onClick={removeFile}
-                className="remove-file-btn"
-                disabled={isUploading}
+          <div 
+            className={`file-drop-zone ${isDragOver ? 'drag-over' : ''} ${file ? 'has-file' : ''}`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
+            {!file ? (
+              <motion.div 
+                className="drop-zone-content"
+                initial={{ scale: 1 }}
+                animate={{ scale: isDragOver ? 1.05 : 1 }}
+                transition={{ duration: 0.2 }}
               >
-                <FiX />
-              </button>
+                <div className="upload-icon">
+                  <FiUpload size={48} />
+                </div>
+                <h3>Drop your Excel file here</h3>
+                <p>or</p>
+                <label className="browse-button">
+                  Browse Files
+                  <input
+                    type="file"
+                    accept=".xlsx, .xls"
+                    onChange={handleFileChange}
+                    disabled={isUploading}
+                    className="file-input"
+                  />
+                </label>
+              </motion.div>
+            ) : (
+              <motion.div 
+                className="selected-file"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="file-info">
+                  <div className="file-icon">
+                    <FiFile size={24} />
+                  </div>
+                  <div className="file-details">
+                    <span className="file-name">{file.name}</span>
+                    <span className="file-size">{formatFileSize(file.size)}</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={removeFile}
+                  className="remove-file-btn"
+                  disabled={isUploading}
+                >
+                  <FiX size={20} />
+                </button>
+              </motion.div>
             )}
           </div>
 
-          {errorMessage && <div className="error-message">{errorMessage}</div>}
+          <AnimatePresence>
+            {errorMessage && (
+              <motion.div 
+                className="error-message"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+              >
+                <FiAlertCircle size={16} />
+                <span>{errorMessage}</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          {isUploading && (
-            <div className="upload-progress">
-              <div
-                className="progress-bar"
-                style={{ width: `${uploadProgress}%` }}
-              ></div>
-              <span>{uploadProgress}%</span>
-            </div>
-          )}
+          <AnimatePresence>
+            {isUploading && (
+              <motion.div 
+                className="upload-progress"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="progress-info">
+                  <span>Uploading...</span>
+                  <span>{uploadProgress}%</span>
+                </div>
+                <div className="progress-bar-container">
+                  <motion.div
+                    className="progress-bar"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${uploadProgress}%` }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          {uploadStatus === "success" && (
-            <div className="success-message">
-              <FiCheckCircle />
-              <span>File uploaded successfully!</span>
-            </div>
-          )}
+          <AnimatePresence>
+            {uploadStatus === "success" && (
+              <motion.div 
+                className="success-message"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.3 }}
+              >
+                <FiCheckCircle size={20} />
+                <span>File uploaded successfully!</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          <button
+          <motion.button
             type="submit"
-            className="upload-button"
+            className={`upload-button ${!file || isUploading ? 'disabled' : ''}`}
             disabled={!file || isUploading}
+            whileHover={{ scale: !file || isUploading ? 1 : 1.02 }}
+            whileTap={{ scale: !file || isUploading ? 1 : 0.98 }}
+            transition={{ duration: 0.2 }}
           >
-            {isUploading ? "Uploading..." : "Upload File"}
-          </button>
+            {isUploading ? (
+              <>
+                <div className="loading-spinner"></div>
+                Uploading...
+              </>
+            ) : (
+              <>
+                <FiUpload size={18} />
+                Upload File
+              </>
+            )}
+          </motion.button>
         </form>
       </motion.div>
     </div>
